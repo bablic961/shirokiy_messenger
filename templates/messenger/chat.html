@@ -375,6 +375,8 @@
         font-weight: 600;
         margin-bottom: 4px;
         opacity: 0.9;
+        display: block;
+        color: inherit;
     }
 
     .message-text {
@@ -430,6 +432,7 @@
         cursor: pointer;
         margin-top: 8px;
         object-fit: cover;
+        display: block;
     }
 
     .message-video {
@@ -437,6 +440,34 @@
         max-height: 400px;
         border-radius: 12px;
         margin-top: 8px;
+        display: block;
+    }
+
+    /* Голосовые сообщения и видео-кружки */
+    .message-voice,
+    .voice-player {
+        max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 8px;
+    }
+
+    .message-video-note,
+    .video-note-player {
+        max-width: 100%;
+        width: 200px;
+        height: 200px;
+        margin-top: 8px;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    @media (max-width: 768px) {
+        .message-video-note,
+        .video-note-player {
+            width: 180px;
+            height: 180px;
+        }
     }
 
     .file-attachment {
@@ -449,6 +480,8 @@
         margin-top: 8px;
         text-decoration: none;
         color: inherit;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     .message-group.own .file-attachment {
@@ -458,15 +491,18 @@
 
     .file-icon {
         font-size: 24px;
+        flex-shrink: 0;
     }
 
     .file-info {
         flex: 1;
+        min-width: 0;
     }
 
     .file-name {
         font-size: 14px;
         font-weight: 500;
+        word-break: break-word;
     }
 
     .file-size {
@@ -658,6 +694,11 @@
 
     body.dark-theme .message-sender {
         color: #94a3b8;
+        opacity: 1;
+    }
+
+    body.dark-theme .message-group.own .message-sender {
+        color: rgba(255, 255, 255, 0.9);
     }
 
     body.dark-theme .date-label {
