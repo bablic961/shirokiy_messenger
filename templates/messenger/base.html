@@ -3,8 +3,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#667eea">
     <title>{% block title %}Shirokiy Messenger{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'mobile-fixes.css' %}">
     <style>
         * {
             margin: 0;
@@ -279,6 +283,7 @@
 
         {% block extra_css %}{% endblock %}
     </style>
+    <link rel="stylesheet" href="{% static 'mobile-fixes.css' %}">
 </head>
 <body>
     {% block content %}{% endblock %}
