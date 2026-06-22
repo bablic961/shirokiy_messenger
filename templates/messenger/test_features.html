@@ -1,0 +1,225 @@
+{% extends 'messenger/base.html' %}
+
+{% block title %}Тест функций - Shirokiy Messenger{% endblock %}
+
+{% block extra_css %}
+<style>
+    .test-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        background: white;
+    }
+
+    body.dark-theme .test-container {
+        background: #1e293b;
+        color: #e2e8f0;
+    }
+
+    .test-section {
+        margin: 30px 0;
+        padding: 20px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+    }
+
+    body.dark-theme .test-section {
+        border-color: #334155;
+    }
+
+    .test-button {
+        padding: 12px 24px;
+        margin: 10px;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .test-result {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 8px;
+        background: #f0f9ff;
+        color: #0c4a6e;
+    }
+
+    body.dark-theme .test-result {
+        background: #0f172a;
+        color: #93c5fd;
+    }
+
+    .test-user {
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+    }
+
+    body.dark-theme .test-user {
+        border-color: #334155;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="test-container">
+    <h1>🧪 Тестирование функций</h1>
+
+    <!-- Тест темной темы -->
+    <div class="test-section">
+        <h2>1. Темная тема</h2>
+        <p>Текущая тема: <span id="currentTheme">Загрузка...</span></p>
+        <button class="test-button" onclick="testTheme()">Переключить тему</button>
+        <div id="themeResult" class="test-result" style="display:none;"></div>
+    </div>
+
+    <!-- Тест локальных меток -->
+    <div class="test-section">
+        <h2>2. Локальные метки</h2>
+        <p>Статус LocalUserLabels: <span id="labelsStatus">Загрузка...</span></p>
+
+        <div class="test-user" data-user-id="1">
+            <div class="user-name" data-original-name="Тестовый пользователь">Тестовый пользователь</div>
+        </div>
+
+        <button class="test-button" onclick="testLabels()">Установить метку "Тест"</button>
+        <button class="test-button" onclick="applyLabels()">Применить метки</button>
+        <button class="test-button" onclick="showLabelDialog()">Показать диалог</button>
+        <div id="labelsResult" class="test-result" style="display:none;"></div>
+    </div>
+
+    <!-- Тест реакций -->
+    <div class="test-section">
+        <h2>3. Реакции (проверка функций)</h2>
+        <p>Статус функций:</p>
+        <ul>
+            <li>window.toggleReactionPicker: <span id="toggleStatus">Проверка...</span></li>
+            <li>window.addReaction: <span id="addReactionStatus">Проверка...</span></li>
+        </ul>
+        <div id="reactionsResult" class="test-result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Консоль браузера</h2>
+        <p>Откройте консоль (F12) чтобы увидеть подробные логи всех проверок.</p>
+    </div>
+</div>
+
+<script>
+    console.log('=== НАЧАЛО ТЕСТИРОВАНИЯ ===');
+
+    // Проверка темной темы
+    function updateThemeStatus() {
+        const isDark = document.body.classList.contains('dark-theme');
+        document.getElementById('currentTheme').textContent = isDark ? '🌙 Темная' : '☀️ Светлая';
+        console.log('Текущая тема:', isDark ? 'темная' : 'светлая');
+    }
+
+    function testTheme() {
+        if (typeof window.setTheme === 'function') {
+            const isDark = document.body.classList.contains('dark-theme');
+            window.setTheme(isDark ? 'light' : 'dark');
+            updateThemeStatus();
+            document.getElementById('themeResult').style.display = 'block';
+            document.getElementById('themeResult').textContent = '✅ Тема переключена успешно!';
+            console.log('✅ Тема переключена');
+        } else {
+            document.getElementById('themeResult').style.display = 'block';
+            document.getElementById('themeResult').textContent = '❌ window.setTheme не найдена!';
+            console.error('❌ window.setTheme не найдена');
+        }
+    }
+
+    // Проверка локальных меток
+    function updateLabelsStatus() {
+        if (typeof LocalUserLabels !== 'undefined' && window.userLabels) {
+            document.getElementById('labelsStatus').textContent = '✅ Загружены';
+            console.log('✅ LocalUserLabels загружен:', window.userLabels);
+        } else if (typeof LocalUserLabels !== 'undefined') {
+            document.getElementById('labelsStatus').textContent = '⚠️ Класс есть, но не инициализирован';
+            console.warn('⚠️ LocalUserLabels есть, но window.userLabels = null');
+        } else {
+            document.getElementById('labelsStatus').textContent = '❌ Не загружены';
+            console.error('❌ LocalUserLabels не загружен');
+        }
+    }
+
+    function testLabels() {
+        if (window.userLabels) {
+            window.userLabels.setLabel('1', 'Тест');
+            document.getElementById('labelsResult').style.display = 'block';
+            document.getElementById('labelsResult').textContent = '✅ Метка "Тест" сохранена для пользователя ID=1';
+            console.log('✅ Метка установлена:', window.userLabels.getLabel('1'));
+        } else {
+            document.getElementById('labelsResult').style.display = 'block';
+            document.getElementById('labelsResult').textContent = '❌ window.userLabels не найден!';
+            console.error('❌ window.userLabels не найден');
+        }
+    }
+
+    function applyLabels() {
+        if (window.userLabels) {
+            window.userLabels.applyLabelsToPage();
+            document.getElementById('labelsResult').style.display = 'block';
+            document.getElementById('labelsResult').textContent = '✅ Метки применены к странице';
+            console.log('✅ applyLabelsToPage() вызван');
+        } else {
+            document.getElementById('labelsResult').style.display = 'block';
+            document.getElementById('labelsResult').textContent = '❌ window.userLabels не найден!';
+            console.error('❌ window.userLabels не найден');
+        }
+    }
+
+    function showLabelDialog() {
+        if (window.userLabels) {
+            window.userLabels.showEditDialog('1', 'Тестовый пользователь', function() {
+                console.log('✅ Диалог закрыт, callback вызван');
+                applyLabels();
+            });
+        } else {
+            alert('❌ window.userLabels не найден!');
+        }
+    }
+
+    // Проверка реакций
+    function checkReactionFunctions() {
+        const toggleExists = typeof window.toggleReactionPicker === 'function';
+        const addExists = typeof window.addReaction === 'function';
+
+        document.getElementById('toggleStatus').textContent = toggleExists ? '✅ Найдена' : '❌ Не найдена';
+        document.getElementById('addReactionStatus').textContent = addExists ? '✅ Найдена' : '❌ Не найдена';
+
+        console.log('window.toggleReactionPicker:', toggleExists);
+        console.log('window.addReaction:', addExists);
+
+        if (toggleExists && addExists) {
+            document.getElementById('reactionsResult').style.display = 'block';
+            document.getElementById('reactionsResult').textContent = '✅ Все функции реакций найдены';
+        } else {
+            document.getElementById('reactionsResult').style.display = 'block';
+            document.getElementById('reactionsResult').textContent = '❌ Некоторые функции реакций не найдены';
+        }
+    }
+
+    // Запуск проверок при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('=== DOMContentLoaded ===');
+        updateThemeStatus();
+        updateLabelsStatus();
+        checkReactionFunctions();
+
+        // Ждем немного и проверяем снова
+        setTimeout(function() {
+            console.log('=== Повторная проверка через 1 секунду ===');
+            updateLabelsStatus();
+            checkReactionFunctions();
+        }, 1000);
+    });
+
+    console.log('=== СКРИПТ ЗАГРУЖЕН ===');
+</script>
+{% endblock %}

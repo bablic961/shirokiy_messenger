@@ -1,0 +1,297 @@
+{% extends 'messenger/base.html' %}
+
+{% block title %}Поиск пользователей - Shirokiy Messenger{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .search-header {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .search-header h1 {
+        font-size: 28px;
+        color: #1f2937;
+        margin-bottom: 20px;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+        color: #9ca3af;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 15px 15px 15px 50px;
+        border: 2px solid #e5e7eb;
+        border-radius: 15px;
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+    }
+
+    .back-link:hover {
+        transform: translateX(-5px);
+    }
+
+    .users-list {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .user-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        border-bottom: 1px solid #f3f4f6;
+        transition: all 0.3s;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .user-item:last-child {
+        border-bottom: none;
+    }
+
+    .user-item:hover {
+        background: #f9fafb;
+        transform: translateX(5px);
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex: 1;
+    }
+
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 18px;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .online-indicator {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 14px;
+        height: 14px;
+        background: #10b981;
+        border: 3px solid white;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+
+    .user-details {
+        flex: 1;
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 16px;
+        color: #1f2937;
+        margin-bottom: 3px;
+    }
+
+    .user-email {
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    .user-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+        background: #f3f4f6;
+        color: #4b5563;
+    }
+
+    .btn-secondary:hover {
+        background: #e5e7eb;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #9ca3af;
+    }
+
+    .empty-state-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: #6b7280;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-container">
+    <a href="{% url 'messenger:home' %}" class="back-link">← Назад</a>
+
+    <div class="search-header">
+        <h1>Поиск пользователей</h1>
+        <form method="get">
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input
+                    type="text"
+                    name="q"
+                    class="search-input"
+                    placeholder="Введите имя пользователя или email..."
+                    value="{{ query }}"
+                    autofocus
+                >
+            </div>
+        </form>
+    </div>
+
+    <div class="users-list">
+        {% if users %}
+            {% for user_item in users %}
+            <div class="user-item" data-user-id="{{ user_item.id }}">
+                <div class="user-info">
+                    <div class="avatar">
+                        {% if user_item.avatar %}
+                        <img src="{{ user_item.avatar.url }}" alt="{{ user_item.username }}">
+                        {% else %}
+                        {{ user_item.username|truncatechars:2|upper }}
+                        {% endif %}
+                        {% if user_item.online_status %}
+                        <span class="online-indicator"></span>
+                        {% endif %}
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name" data-original-name="{{ user_item.username }}">{{ user_item.username }}</div>
+                        <div class="user-email">{{ user_item.email }}</div>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <button class="btn btn-secondary" onclick="editUserLabel({{ user_item.id }}, '{{ user_item.username }}')" title="Локальная метка">🏷️</button>
+                    <a href="{% url 'messenger:profile_user' user_item.id %}" class="btn btn-secondary">👤 Профиль</a>
+                    <a href="{% url 'messenger:create_chat' user_item.id %}" class="btn btn-primary">💬 Написать</a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                {% if query %}
+                <h3>Ничего не найдено</h3>
+                <p>Попробуйте изменить поисковый запрос</p>
+                {% else %}
+                <h3>Начните поиск</h3>
+                <p>Введите имя пользователя или email для поиска</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Функция editUserLabel загружается из chat-functions.js (глобально)
+
+    // Применяем метки при загрузке
+    if (window.userLabels) {
+        setTimeout(() => {
+            window.userLabels.applyLabelsToPage();
+        }, 100);
+    }
+
+    // Автоматическая отправка формы при вводе
+    const searchInput = document.querySelector('.search-input');
+    let searchTimeout;
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            this.form.submit();
+        }, 500);
+    });
+</script>
+{% endblock %}

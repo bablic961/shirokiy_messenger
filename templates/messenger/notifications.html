@@ -1,0 +1,175 @@
+{% extends 'messenger/base.html' %}
+
+{% block title %}Уведомления - Shirokiy Messenger{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notifications-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+    }
+
+    .back-link:hover {
+        transform: translateX(-5px);
+    }
+
+    .notifications-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .notifications-header {
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    .notifications-header h1 {
+        font-size: 28px;
+        color: #1f2937;
+    }
+
+    .notification-item {
+        display: flex;
+        align-items: start;
+        gap: 15px;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        transition: all 0.3s;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .notification-item:hover {
+        background: #f9fafb;
+        transform: translateX(5px);
+    }
+
+    .notification-item.unread {
+        background: #eff6ff;
+        border-left: 4px solid #667eea;
+    }
+
+    .notification-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+
+    .notification-icon.message {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .notification-icon.subscription {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+
+    .notification-icon.group_invite {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+    }
+
+    .notification-content {
+        flex: 1;
+    }
+
+    .notification-sender {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 5px;
+    }
+
+    .notification-text {
+        color: #4b5563;
+        font-size: 15px;
+        line-height: 1.5;
+        margin-bottom: 8px;
+    }
+
+    .notification-time {
+        font-size: 13px;
+        color: #9ca3af;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #9ca3af;
+    }
+
+    .empty-state-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: #6b7280;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="notifications-container">
+    <a href="{% url 'messenger:home' %}" class="back-link">← Назад</a>
+
+    <div class="notifications-card">
+        <div class="notifications-header">
+            <h1>🔔 Уведомления</h1>
+        </div>
+
+        {% if notifications %}
+            {% for notification in notifications %}
+            <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                <div class="notification-icon {{ notification.notification_type }}">
+                    {% if notification.notification_type == 'message' %}💬
+                    {% elif notification.notification_type == 'subscription' %}👤
+                    {% elif notification.notification_type == 'group_invite' %}👥
+                    {% endif %}
+                </div>
+                <div class="notification-content">
+                    {% if notification.sender %}
+                    <div class="notification-sender">{{ notification.sender.username }}</div>
+                    {% endif %}
+                    <div class="notification-text">{{ notification.content }}</div>
+                    <div class="notification-time">{{ notification.created_at|timesince }} назад</div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">🔔</div>
+                <h3>Нет уведомлений</h3>
+                <p>Здесь будут отображаться ваши уведомления</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

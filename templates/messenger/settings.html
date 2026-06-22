@@ -1,0 +1,425 @@
+{% extends 'messenger/base.html' %}
+
+{% block title %}Настройки - Shirokiy Messenger{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #f9fafb;
+    }
+
+    .settings-container {
+        max-width: 800px;
+        margin: 0 auto;
+        min-height: 100vh;
+    }
+
+    .settings-header {
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .back-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+        background: rgba(255,255,255,0.25);
+    }
+
+    .settings-title {
+        flex: 1;
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .settings-content {
+        padding: 20px;
+    }
+
+    .settings-section {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .section-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .section-info {
+        flex: 1;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .section-description {
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    .setting-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .setting-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .setting-item:first-child {
+        padding-top: 0;
+    }
+
+    .setting-info {
+        flex: 1;
+    }
+
+    .setting-label {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .setting-desc {
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .toggle-switch {
+        position: relative;
+        width: 52px;
+        height: 28px;
+        background: #e5e7eb;
+        border-radius: 14px;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        padding: 0;
+    }
+
+    .toggle-switch.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .toggle-switch::after {
+        content: '';
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background: white;
+        border-radius: 50%;
+        top: 3px;
+        left: 3px;
+        transition: all 0.3s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .toggle-switch.active::after {
+        left: 27px;
+    }
+
+    .theme-preview {
+        display: flex;
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .theme-option {
+        flex: 1;
+        padding: 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+    }
+
+    .theme-option.active {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+    }
+
+    .theme-option:hover {
+        border-color: #667eea;
+    }
+
+    .theme-icon {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+
+    .theme-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .info-box {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-radius: 12px;
+        padding: 16px;
+        margin-top: 12px;
+        display: flex;
+        gap: 12px;
+    }
+
+    .info-icon {
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .info-text {
+        font-size: 13px;
+        color: #0c4a6e;
+        line-height: 1.5;
+    }
+
+    /* Темная тема для страницы настроек */
+    body.dark-theme .settings-content {
+        background: #0f172a;
+    }
+
+    body.dark-theme .settings-section {
+        background: #1e293b;
+    }
+
+    body.dark-theme .section-title,
+    body.dark-theme .setting-label,
+    body.dark-theme .theme-name {
+        color: #e2e8f0;
+    }
+
+    body.dark-theme .section-description,
+    body.dark-theme .setting-desc {
+        color: #94a3b8;
+    }
+
+    body.dark-theme .setting-item {
+        border-bottom-color: #334155;
+    }
+
+    body.dark-theme .theme-option {
+        border-color: #334155;
+        background: #0f172a;
+    }
+
+    body.dark-theme .theme-option.active {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    body.dark-theme .info-box {
+        background: rgba(59, 130, 246, 0.1);
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    body.dark-theme .info-text {
+        color: #93c5fd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-header">
+        <a href="{% url 'messenger:home' %}" class="back-btn">←</a>
+        <div class="settings-title">Настройки и кастомизация</div>
+    </div>
+
+    <div class="settings-content">
+        <!-- Внешний вид -->
+        <div class="settings-section">
+            <div class="section-header">
+                <div class="section-icon">🎨</div>
+                <div class="section-info">
+                    <div class="section-title">Внешний вид</div>
+                    <div class="section-description">Настройте тему и оформление интерфейса</div>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-label">Тема оформления</div>
+                    <div class="setting-desc">Выберите светлую или темную тему</div>
+                </div>
+            </div>
+
+            <div class="theme-preview">
+                <div class="theme-option" id="lightTheme" onclick="setTheme('light')">
+                    <div class="theme-icon">☀️</div>
+                    <div class="theme-name">Светлая</div>
+                </div>
+                <div class="theme-option" id="darkTheme" onclick="setTheme('dark')">
+                    <div class="theme-icon">🌙</div>
+                    <div class="theme-name">Темная</div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-icon">💡</div>
+                <div class="info-text">
+                    Темная тема снижает нагрузку на глаза при использовании в темное время суток и экономит заряд батареи на OLED-экранах.
+                </div>
+            </div>
+        </div>
+
+        <!-- Приватность -->
+        <div class="settings-section">
+            <div class="section-header">
+                <div class="section-icon">🔒</div>
+                <div class="section-info">
+                    <div class="section-title">Приватность</div>
+                    <div class="section-description">Управление конфиденциальностью данных</div>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-label">Показывать статус "В сети"</div>
+                    <div class="setting-desc">Другие пользователи видят, когда вы онлайн</div>
+                </div>
+                <button class="toggle-switch active" id="onlineStatusToggle" onclick="toggleOnlineStatus()"></button>
+            </div>
+
+            <div class="info-box">
+                <div class="info-icon">🏷️</div>
+                <div class="info-text">
+                    <strong>Локальные метки:</strong> Ваши подписи к пользователям хранятся только на этом устройстве и видны только вам. Никто другой не имеет к ним доступа.
+                </div>
+            </div>
+        </div>
+
+        <!-- О приложении -->
+        <div class="settings-section">
+            <div class="section-header">
+                <div class="section-icon">ℹ️</div>
+                <div class="section-info">
+                    <div class="section-title">О приложении</div>
+                    <div class="section-description">Информация о Shirokiy Messenger</div>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-label">Версия</div>
+                    <div class="setting-desc">2.0.1</div>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-label">Технологии</div>
+                    <div class="setting-desc">Django 6.0, Python 3.14, Django Channels</div>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <div class="setting-label">Новые функции v2.0</div>
+                    <div class="setting-desc">Реакции, поиск, темная тема, локальные метки</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Функции управления темой
+    function setTheme(theme) {
+        // Используем глобальную функцию из base.html
+        if (window.setTheme) {
+            window.setTheme(theme);
+        }
+
+        // Обновляем визуальное состояние
+        const lightTheme = document.getElementById('lightTheme');
+        const darkTheme = document.getElementById('darkTheme');
+
+        if (theme === 'dark') {
+            lightTheme.classList.remove('active');
+            darkTheme.classList.add('active');
+        } else {
+            darkTheme.classList.remove('active');
+            lightTheme.classList.add('active');
+        }
+    }
+
+    // Загрузка текущей темы
+    function loadCurrentTheme() {
+        const theme = localStorage.getItem('theme') || 'light';
+        const lightTheme = document.getElementById('lightTheme');
+        const darkTheme = document.getElementById('darkTheme');
+
+        if (theme === 'dark') {
+            darkTheme.classList.add('active');
+        } else {
+            lightTheme.classList.add('active');
+        }
+    }
+
+    // Переключение статуса онлайн
+    function toggleOnlineStatus() {
+        const toggle = document.getElementById('onlineStatusToggle');
+        toggle.classList.toggle('active');
+
+        const isActive = toggle.classList.contains('active');
+        // Здесь можно добавить AJAX запрос для обновления статуса на сервере
+        console.log('Online status:', isActive);
+    }
+
+    // Инициализация при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCurrentTheme();
+    });
+</script>
+{% endblock %}

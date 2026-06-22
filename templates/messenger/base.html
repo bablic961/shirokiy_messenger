@@ -1,0 +1,437 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Shirokiy Messenger{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Темная тема */
+        body.dark-theme {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+        }
+
+        body.dark-theme .chat-container {
+            background: #0f172a;
+        }
+
+        body.dark-theme .messages-area {
+            background: #020617;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
+        }
+
+        body.dark-theme .message-group:not(.own) .message-bubble {
+            background: #1e293b;
+            color: #f1f5f9;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        body.dark-theme .message-input {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .message-input:focus {
+            background: #1e293b;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        body.dark-theme .input-area {
+            background: #0f172a;
+            border-top-color: #1e293b;
+        }
+
+        body.dark-theme .date-label {
+            background: rgba(30, 41, 59, 0.9);
+            color: #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        body.dark-theme .search-panel {
+            background: #0f172a;
+            border-bottom-color: #1e293b;
+        }
+
+        body.dark-theme .search-input {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .search-input:focus {
+            border-color: #6366f1;
+        }
+
+        body.dark-theme .search-result-item {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .search-result-item:hover {
+            background: #6366f1;
+            color: white;
+        }
+
+        body.dark-theme .reaction-picker {
+            background: #1e293b;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        body.dark-theme .reaction-option:hover {
+            background: #334155;
+        }
+
+        body.dark-theme .file-preview-item {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .attach-button {
+            background: #334155;
+        }
+
+        body.dark-theme .attach-button:hover {
+            background: #475569;
+        }
+
+        body.dark-theme .chat-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        body.dark-theme .theme-toggle {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
+
+        /* Темная тема для других страниц */
+        body.dark-theme .profile-container,
+        body.dark-theme .search-container {
+            background: #020617;
+        }
+
+        body.dark-theme .profile-card,
+        body.dark-theme .profile-top,
+        body.dark-theme .search-header,
+        body.dark-theme .users-list,
+        body.dark-theme .edit-section {
+            background: #0f172a;
+            color: #f1f5f9;
+            border: 1px solid #1e293b;
+        }
+
+        body.dark-theme .profile-name,
+        body.dark-theme .section-title,
+        body.dark-theme .search-header h1 {
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .profile-email,
+        body.dark-theme .profile-bio,
+        body.dark-theme .stat-label,
+        body.dark-theme .form-label,
+        body.dark-theme .user-email {
+            color: #cbd5e1;
+        }
+
+        body.dark-theme .stat-item {
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+
+        body.dark-theme .form-input,
+        body.dark-theme .form-textarea,
+        body.dark-theme .file-input-wrapper {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .form-input:focus,
+        body.dark-theme .form-textarea:focus {
+            background: #1e293b;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        body.dark-theme .file-input-wrapper:hover {
+            background: #334155;
+        }
+
+        body.dark-theme .btn-secondary {
+            background: #334155;
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .btn-secondary:hover {
+            background: #475569;
+        }
+
+        body.dark-theme .user-item {
+            border-bottom-color: #1e293b;
+        }
+
+        body.dark-theme .user-item:hover {
+            background: #1e293b;
+        }
+
+        body.dark-theme .user-name {
+            color: #f1f5f9;
+        }
+
+        body.dark-theme .empty-state h3,
+        body.dark-theme .empty-state p {
+            color: #cbd5e1;
+        }
+
+        body.dark-theme .back-link {
+            color: #818cf8;
+        }
+
+        body.dark-theme .stats-grid {
+            background: #1e293b;
+        }
+
+        body.dark-theme .empty-title {
+            color: #cbd5e1;
+        }
+
+        body.dark-theme .file-message,
+        body.dark-theme .file-attachment {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark-theme .file-name {
+            color: #f1f5f9;
+        }
+
+        /* Темная тема для плееров */
+        body.dark-theme .voice-player {
+            background: rgba(30, 41, 59, 0.6) !important;
+        }
+
+        body.dark-theme .voice-time-display {
+            color: #cbd5e1 !important;
+        }
+
+        body.dark-theme .video-note-time {
+            background: rgba(0, 0, 0, 0.85) !important;
+        }
+
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+    {% block content %}{% endblock %}
+
+    <script src="{% static 'local-labels.js' %}"></script>
+    <script src="{% static 'encryption.js' %}"></script>
+    <script src="{% static 'push-notifications.js' %}"></script>
+    <script src="{% static 'reactions.js' %}"></script>
+    <script src="{% static 'chat-functions.js' %}"></script>
+    <script src="{% static 'voice-recorder.js' %}"></script>
+    <script src="{% static 'video-note-recorder.js' %}"></script>
+    <script src="{% static 'voice-player.js' %}"></script>
+    <script src="{% static 'video-note-player.js' %}"></script>
+    <script>
+        // Инициализация push-уведомлений, шифрования и локальных меток
+        let pushManager = null;
+        let encryption = null;
+        let userLabels = null;
+
+        // Создаем глобальную переменную для window
+        window.userLabels = null;
+
+        // Инициализация темы ДО DOMContentLoaded
+        loadTheme();
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🔄 DOMContentLoaded fired');
+
+            // Инициализация локальных меток
+            if (typeof LocalUserLabels !== 'undefined') {
+                console.log('✅ LocalUserLabels class found');
+                userLabels = new LocalUserLabels();
+                window.userLabels = userLabels;
+                console.log('✅ window.userLabels initialized:', window.userLabels);
+
+                // Применяем метки с задержкой (после полной загрузки)
+                setTimeout(() => {
+                    userLabels.applyLabelsToPage();
+                }, 200);
+
+                // И еще раз через 1 секунду для динамического контента
+                setTimeout(() => {
+                    userLabels.applyLabelsToPage();
+                }, 1000);
+
+                // Запускаем наблюдатель за изменениями DOM
+                userLabels.startObserver();
+            } else {
+                console.error('❌ LocalUserLabels NOT loaded');
+            }
+
+            // Инициализация push-уведомлений
+            if (typeof PushNotificationManager !== 'undefined') {
+                pushManager = new PushNotificationManager();
+                const initialized = await pushManager.init();
+
+                if (initialized && Notification.permission === 'default') {
+                    setTimeout(async () => {
+                        const granted = await pushManager.requestPermission();
+                        if (granted) {
+                            await pushManager.subscribe();
+                        }
+                    }, 2000);
+                } else if (initialized && Notification.permission === 'granted') {
+                    await pushManager.subscribe();
+                }
+            }
+
+            // Инициализация E2E шифрования
+            if (typeof E2EEncryption !== 'undefined') {
+                encryption = new E2EEncryption();
+                const publicKey = await encryption.init();
+
+                // Если сгенерирован новый публичный ключ - отправляем на сервер
+                if (publicKey) {
+                    try {
+                        const response = await fetch('/api/save-public-key/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: JSON.stringify({ public_key: publicKey })
+                        });
+
+                        if (response.ok) {
+                            console.log('Публичный ключ сохранен на сервере');
+                        }
+                    } catch (error) {
+                        console.error('Ошибка сохранения ключа:', error);
+                    }
+                }
+            }
+        });
+
+        // Получение CSRF токена из cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Управление темой
+        window.toggleTheme = function() {
+            const body = document.body;
+            const themeBtn = document.getElementById('themeToggleBtn');
+
+            if (body.classList.contains('dark-theme')) {
+                body.classList.remove('dark-theme');
+                localStorage.setItem('theme', 'light');
+                if (themeBtn) themeBtn.textContent = '🌙';
+            } else {
+                body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+                if (themeBtn) themeBtn.textContent = '☀️';
+            }
+        };
+
+        function loadTheme() {
+            const theme = localStorage.getItem('theme');
+            const themeBtn = document.getElementById('themeToggleBtn');
+
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+                if (themeBtn) themeBtn.textContent = '☀️';
+            } else {
+                if (themeBtn) themeBtn.textContent = '🌙';
+            }
+        }
+
+        // Функция для установки темы (используется на странице настроек)
+        window.setTheme = function(theme) {
+            const body = document.body;
+
+            if (theme === 'dark') {
+                body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-theme');
+                localStorage.setItem('theme', 'light');
+            }
+        };
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

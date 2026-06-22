@@ -1,0 +1,547 @@
+{% extends 'messenger/base.html' %}
+
+{% block title %}Главная - Shirokiy Messenger{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .app-container {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+    }
+
+    /* Боковая панель */
+    .sidebar {
+        width: 100%;
+        max-width: 420px;
+        background: white;
+        border-right: 1px solid #e5e7eb;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease;
+    }
+
+    .app-header {
+        padding: 16px 20px;
+        padding-top: max(16px, env(safe-area-inset-top));
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .app-logo {
+        font-size: 22px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .header-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .header-btn:hover {
+        background: rgba(255,255,255,0.25);
+        transform: scale(1.05);
+    }
+
+    .search-container {
+        padding: 16px 20px;
+        background: white;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        font-size: 16px;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 12px 12px 42px;
+        border: 2px solid #f3f4f6;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.2s;
+        background: #f9fafb;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+    }
+
+    .tabs {
+        display: flex;
+        background: white;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .tab {
+        flex: 1;
+        padding: 14px;
+        border: none;
+        background: none;
+        font-size: 15px;
+        font-weight: 600;
+        color: #9ca3af;
+        cursor: pointer;
+        position: relative;
+        transition: color 0.2s;
+    }
+
+    .tab.active {
+        color: #667eea;
+    }
+
+    .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: #667eea;
+        border-radius: 3px 3px 0 0;
+    }
+
+    .chats-list {
+        flex: 1;
+        overflow-y: auto;
+        background: white;
+    }
+
+    .chat-item {
+        display: flex;
+        align-items: center;
+        padding: 14px 20px;
+        cursor: pointer;
+        transition: background 0.2s;
+        border-bottom: 1px solid #f9fafb;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .chat-item:hover {
+        background: #f9fafb;
+    }
+
+    .chat-item:active {
+        background: #f3f4f6;
+    }
+
+    .chat-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 20px;
+        margin-right: 14px;
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    .chat-avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .online-dot {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 14px;
+        height: 14px;
+        background: #10b981;
+        border: 3px solid white;
+        border-radius: 50%;
+    }
+
+    .chat-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .chat-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+
+    .chat-name {
+        font-weight: 600;
+        font-size: 16px;
+        color: #1f2937;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .chat-time {
+        font-size: 12px;
+        color: #9ca3af;
+        flex-shrink: 0;
+        margin-left: 8px;
+    }
+
+    .chat-preview {
+        font-size: 14px;
+        color: #6b7280;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .empty-state {
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+    }
+
+    .empty-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 8px;
+    }
+
+    .empty-text {
+        font-size: 14px;
+        color: #9ca3af;
+    }
+
+    /* Темная тема для главной страницы */
+    body.dark-theme .sidebar {
+        background: #1e293b;
+        border-right-color: #334155;
+    }
+
+    body.dark-theme .search-container {
+        background: #1e293b;
+        border-bottom-color: #334155;
+    }
+
+    body.dark-theme .search-input {
+        background: #0f172a;
+        border-color: #334155;
+        color: #e2e8f0;
+    }
+
+    body.dark-theme .search-input:focus {
+        background: #1e293b;
+        border-color: #667eea;
+    }
+
+    body.dark-theme .tabs {
+        background: #1e293b;
+        border-bottom-color: #334155;
+    }
+
+    body.dark-theme .tab {
+        color: #94a3b8;
+    }
+
+    body.dark-theme .tab.active {
+        color: #667eea;
+    }
+
+    body.dark-theme .chats-list {
+        background: #1e293b;
+    }
+
+    body.dark-theme .chat-item {
+        border-bottom-color: #334155;
+    }
+
+    body.dark-theme .chat-item:hover {
+        background: #334155;
+    }
+
+    body.dark-theme .chat-item:active {
+        background: #475569;
+    }
+
+    body.dark-theme .chat-name {
+        color: #e2e8f0;
+    }
+
+    body.dark-theme .chat-last-message {
+        color: #94a3b8;
+    }
+
+    body.dark-theme .empty-icon {
+        opacity: 0.5;
+    }
+
+    body.dark-theme .empty-title {
+        color: #94a3b8;
+    }
+
+    body.dark-theme .empty-text {
+        color: #64748b;
+    }
+
+    /* Мобильная адаптация */
+    @media (max-width: 768px) {
+        .sidebar {
+            max-width: 100%;
+        }
+
+        /* Увеличить кнопки до 44px для тачскринов */
+        .header-btn {
+            width: 44px;
+            height: 44px;
+            font-size: 20px;
+        }
+
+        /* Увеличить зону клика для чатов */
+        .chat-item {
+            padding: 14px 20px;
+        }
+
+        /* Адаптация аватарок для маленьких экранов */
+        .chat-avatar {
+            width: 52px;
+            height: 52px;
+            font-size: 19px;
+        }
+    }
+
+    /* Убрать hover эффекты на тачскринах */
+    @media (hover: none) {
+        .header-btn:hover {
+            background: rgba(255,255,255,0.15);
+            transform: none;
+        }
+
+        .chat-item:hover {
+            background: white;
+        }
+
+        body.dark-theme .chat-item:hover {
+            background: #1e293b;
+        }
+    }
+
+    /* Десктопная адаптация */
+    @media (min-width: 769px) {
+        .app-container {
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        .sidebar {
+            min-width: 380px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <div class="sidebar">
+        <div class="app-header">
+            <div class="app-logo">
+                <span>🚀</span>
+                <span>Shirokiy</span>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" onclick="toggleTheme()" title="Тема" id="themeToggleBtn">🌙</button>
+                <a href="{% url 'messenger:search_users' %}" class="header-btn" title="Поиск">🔍</a>
+                <a href="{% url 'messenger:create_group' %}" class="header-btn" title="Группа">➕</a>
+                <a href="{% url 'messenger:profile' %}" class="header-btn" title="Профиль">👤</a>
+                <a href="{% url 'messenger:logout' %}" class="header-btn" title="Выход">🚪</a>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input
+                    type="text"
+                    class="search-input"
+                    placeholder="Поиск пользователей..."
+                    onclick="window.location.href='{% url 'messenger:search_users' %}'"
+                    readonly
+                >
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('chats')">Чаты</button>
+            <button class="tab" onclick="switchTab('subs')">Подписки</button>
+        </div>
+
+        <div class="chats-list" id="chatsTab">
+            {% if chats %}
+                {% for chat in chats %}
+                <a href="{% url 'messenger:chat' chat.id %}" class="chat-item" data-user-id="{% if chat.chat_type == 'private' %}{% for p in chat.participants.all %}{% if p != user %}{{ p.id }}{% endif %}{% endfor %}{% endif %}">
+                    <div class="chat-avatar">
+                        {% if chat.chat_type == 'group' %}
+                            {% if chat.avatar %}
+                            <img src="{{ chat.avatar.url }}" alt="{{ chat.name }}">
+                            {% else %}
+                            {{ chat.name|slice:":2"|upper }}
+                            {% endif %}
+                        {% else %}
+                            {% for p in chat.participants.all %}
+                                {% if p != user %}
+                                    {% if p.avatar %}
+                                    <img src="{{ p.avatar.url }}" alt="{{ p.username }}">
+                                    {% else %}
+                                    {{ p.username|slice:":2"|upper }}
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="chat-details">
+                        <div class="chat-top">
+                            <div class="chat-name" data-original-name="{% if chat.chat_type == 'private' %}{% for p in chat.participants.all %}{% if p != user %}{{ p.username }}{% endif %}{% endfor %}{% else %}{{ chat.name }}{% endif %}">{{ chat }}</div>
+                            <div class="chat-time">
+                                {% if chat.get_last_message %}
+                                    {{ chat.get_last_message.created_at|date:"H:i" }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="chat-preview">
+                            {% if chat.get_last_message %}
+                                {{ chat.get_last_message.sender.username }}: {{ chat.get_last_message.content|truncatechars:35 }}
+                            {% else %}
+                                Нет сообщений
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">💬</div>
+                    <div class="empty-title">Нет чатов</div>
+                    <div class="empty-text">Найдите пользователей через поиск</div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="chats-list" id="subsTab" style="display: none;">
+            {% if subscriptions %}
+                {% for sub in subscriptions %}
+                <a href="{% url 'messenger:create_chat' sub.subscribed_to.id %}" class="chat-item" data-user-id="{{ sub.subscribed_to.id }}">
+                    <div class="chat-avatar">
+                        {% if sub.subscribed_to.avatar %}
+                        <img src="{{ sub.subscribed_to.avatar.url }}" alt="{{ sub.subscribed_to.username }}">
+                        {% else %}
+                        {{ sub.subscribed_to.username|slice:":2"|upper }}
+                        {% endif %}
+                        {% if sub.subscribed_to.online_status %}
+                        <span class="online-dot"></span>
+                        {% endif %}
+                    </div>
+                    <div class="chat-details">
+                        <div class="chat-top">
+                            <div class="chat-name" data-original-name="{{ sub.subscribed_to.username }}">{{ sub.subscribed_to.username }}</div>
+                        </div>
+                        <div class="chat-preview">
+                            {% if sub.subscribed_to.bio %}
+                                {{ sub.subscribed_to.bio|truncatechars:45 }}
+                            {% else %}
+                                {{ sub.subscribed_to.email }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">👥</div>
+                    <div class="empty-title">Нет подписок</div>
+                    <div class="empty-text">Подпишитесь на интересных людей</div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function switchTab(tab) {
+        const chatsTab = document.getElementById('chatsTab');
+        const subsTab = document.getElementById('subsTab');
+        const tabs = document.querySelectorAll('.tab');
+
+        tabs.forEach(t => t.classList.remove('active'));
+
+        if (tab === 'chats') {
+            chatsTab.style.display = 'block';
+            subsTab.style.display = 'none';
+            tabs[0].classList.add('active');
+        } else {
+            chatsTab.style.display = 'none';
+            subsTab.style.display = 'block';
+            tabs[1].classList.add('active');
+        }
+
+        // Применяем метки при переключении вкладок
+        if (window.userLabels) {
+            setTimeout(() => {
+                window.userLabels.applyLabelsToPage();
+            }, 100);
+        }
+    }
+
+    // Применяем локальные метки при загрузке страницы
+    if (window.userLabels) {
+        setTimeout(() => {
+            window.userLabels.applyLabelsToPage();
+        }, 100);
+    }
+</script>
+{% endblock %}
