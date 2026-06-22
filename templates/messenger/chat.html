@@ -5,17 +5,26 @@
 
 {% block extra_css %}
 <style>
+    /* Базовые стили */
     body {
         margin: 0;
         padding: 0;
         overflow: hidden;
+        background: #f9fafb;
     }
 
+    /* Контейнер чата */
     .chat-container {
         display: flex;
         flex-direction: column;
         height: 100vh;
+        height: -webkit-fill-available;
         background: white;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
     }
 
     /* Шапка чата */
@@ -28,11 +37,15 @@
         align-items: center;
         gap: 12px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        flex-shrink: 0;
+        z-index: 10;
     }
 
     .back-button {
         width: 40px;
         height: 40px;
+        min-width: 40px;
+        min-height: 40px;
         border: none;
         border-radius: 50%;
         background: rgba(255,255,255,0.15);
@@ -44,6 +57,7 @@
         justify-content: center;
         text-decoration: none;
         transition: all 0.2s;
+        flex-shrink: 0;
     }
 
     .back-button:hover {
@@ -53,6 +67,8 @@
     .chat-header-avatar {
         width: 44px;
         height: 44px;
+        min-width: 44px;
+        min-height: 44px;
         border-radius: 50%;
         background: rgba(255,255,255,0.2);
         display: flex;
@@ -63,6 +79,7 @@
         cursor: pointer;
         text-decoration: none;
         color: white;
+        flex-shrink: 0;
     }
 
     .chat-header-avatar img {
@@ -75,12 +92,16 @@
     .chat-header-info {
         flex: 1;
         cursor: pointer;
+        min-width: 0;
     }
 
     .chat-header-name {
         font-size: 18px;
         font-weight: 600;
         margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .chat-header-status {
@@ -91,6 +112,8 @@
     .search-button {
         width: 40px;
         height: 40px;
+        min-width: 40px;
+        min-height: 40px;
         border: none;
         border-radius: 50%;
         background: rgba(255,255,255,0.15);
@@ -101,18 +124,21 @@
         align-items: center;
         justify-content: center;
         transition: all 0.2s;
+        flex-shrink: 0;
     }
 
     .search-button:hover {
         background: rgba(255,255,255,0.25);
     }
 
+    /* Панель поиска */
     .search-panel {
         display: none;
         padding: 12px 20px;
         background: #f9fafb;
         border-bottom: 1px solid #e5e7eb;
         animation: slideDown 0.3s ease;
+        flex-shrink: 0;
     }
 
     @keyframes slideDown {
@@ -153,6 +179,7 @@
         margin-top: 10px;
         max-height: 200px;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .search-result-item {
@@ -274,11 +301,14 @@
     .messages-area {
         flex: 1;
         overflow-y: auto;
+        overflow-x: hidden;
         padding: 20px;
         background: #f9fafb;
         background-image:
             radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.03) 0%, transparent 50%),
             radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.03) 0%, transparent 50%);
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
     }
 
     .date-divider {
@@ -488,6 +518,8 @@
         padding-bottom: max(16px, env(safe-area-inset-bottom));
         background: white;
         border-top: 1px solid #f3f4f6;
+        flex-shrink: 0;
+        z-index: 10;
     }
 
     .file-preview {
@@ -532,6 +564,7 @@
         resize: none;
         transition: all 0.2s;
         background: #f9fafb;
+        box-sizing: border-box;
     }
 
     .message-input:focus {
@@ -544,6 +577,8 @@
     .attach-button, .send-button {
         width: 48px;
         height: 48px;
+        min-width: 48px;
+        min-height: 48px;
         border: none;
         border-radius: 50%;
         color: white;
@@ -725,66 +760,9 @@
         color: #e2e8f0;
     }
 
-    /* Мобильная адаптация */
-    @media (max-width: 768px) {
-        .message-bubble {
-            max-width: 85%;
-        }
-
-        .messages-area {
-            padding: 16px;
-        }
-
-        .input-area {
-            padding: 12px 16px;
-            padding-bottom: max(12px, env(safe-area-inset-bottom));
-        }
-
-        /* Адаптация кнопок для сенсорных экранов (минимум 44px) */
-        .back-button,
-        .search-button {
-            width: 44px;
-            height: 44px;
-            font-size: 20px;
-        }
-
-        .attach-button, .send-button {
-            width: 44px;
-            height: 44px;
-            font-size: 18px;
-        }
-
-        .input-form {
-            gap: 6px;
-        }
-
-        /* Адаптация голосовых плееров */
-        .voice-player {
-            min-width: 240px;
-        }
-
-        /* Адаптация видео-кружков */
-        .video-note-player {
-            width: 200px;
-            height: 200px;
-        }
-
-        /* Увеличить зону клика для элементов чата */
-        .chat-item {
-            padding: 14px 20px;
-        }
+    body.dark-theme .chat-header {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
     }
-
-    /* Убрать hover эффекты на тачскринах */
-    @media (hover: none) {
-        .back-button:hover,
-        .search-button:hover,
-        .header-btn:hover {
-            background: rgba(255,255,255,0.15);
-            transform: none;
-        }
-    }
-
 </style>
 {% endblock %}
 

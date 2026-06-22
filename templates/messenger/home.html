@@ -4,16 +4,20 @@
 
 {% block extra_css %}
 <style>
+    /* Базовые стили страницы */
     body {
         margin: 0;
         padding: 0;
         overflow: hidden;
+        background: #f9fafb;
     }
 
+    /* Контейнер приложения */
     .app-container {
         display: flex;
         height: 100vh;
         width: 100vw;
+        overflow: hidden;
     }
 
     /* Боковая панель */
@@ -24,9 +28,9 @@
         border-right: 1px solid #e5e7eb;
         display: flex;
         flex-direction: column;
-        transition: transform 0.3s ease;
     }
 
+    /* Шапка */
     .app-header {
         padding: 16px 20px;
         padding-top: max(16px, env(safe-area-inset-top));
@@ -35,6 +39,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-shrink: 0;
     }
 
     .app-logo {
@@ -48,6 +53,7 @@
     .header-actions {
         display: flex;
         gap: 8px;
+        align-items: center;
     }
 
     .header-btn {
@@ -64,6 +70,7 @@
         align-items: center;
         justify-content: center;
         text-decoration: none;
+        flex-shrink: 0;
     }
 
     .header-btn:hover {
@@ -71,10 +78,12 @@
         transform: scale(1.05);
     }
 
+    /* Поиск */
     .search-container {
         padding: 16px 20px;
         background: white;
         border-bottom: 1px solid #f3f4f6;
+        flex-shrink: 0;
     }
 
     .search-box {
@@ -88,6 +97,7 @@
         transform: translateY(-50%);
         color: #9ca3af;
         font-size: 16px;
+        pointer-events: none;
     }
 
     .search-input {
@@ -98,6 +108,7 @@
         font-size: 15px;
         transition: all 0.2s;
         background: #f9fafb;
+        box-sizing: border-box;
     }
 
     .search-input:focus {
@@ -106,10 +117,12 @@
         background: white;
     }
 
+    /* Табы */
     .tabs {
         display: flex;
         background: white;
         border-bottom: 1px solid #f3f4f6;
+        flex-shrink: 0;
     }
 
     .tab {
@@ -140,12 +153,16 @@
         border-radius: 3px 3px 0 0;
     }
 
+    /* Список чатов */
     .chats-list {
         flex: 1;
         overflow-y: auto;
+        overflow-x: hidden;
         background: white;
+        -webkit-overflow-scrolling: touch;
     }
 
+    /* Элемент чата */
     .chat-item {
         display: flex;
         align-items: center;
@@ -155,6 +172,7 @@
         border-bottom: 1px solid #f9fafb;
         text-decoration: none;
         color: inherit;
+        min-height: 72px;
     }
 
     .chat-item:hover {
@@ -168,6 +186,8 @@
     .chat-avatar {
         width: 56px;
         height: 56px;
+        min-width: 56px;
+        min-height: 56px;
         border-radius: 50%;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         display: flex;
@@ -202,13 +222,16 @@
     .chat-details {
         flex: 1;
         min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
     }
 
     .chat-top {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 4px;
+        gap: 8px;
     }
 
     .chat-name {
@@ -218,6 +241,8 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        flex: 1;
+        min-width: 0;
     }
 
     .chat-time {
@@ -233,8 +258,10 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        line-height: 1.4;
     }
 
+    /* Пустое состояние */
     .empty-state {
         padding: 60px 20px;
         text-align: center;
@@ -243,6 +270,7 @@
     .empty-icon {
         font-size: 64px;
         margin-bottom: 16px;
+        opacity: 0.5;
     }
 
     .empty-title {
@@ -257,7 +285,11 @@
         color: #9ca3af;
     }
 
-    /* Темная тема для главной страницы */
+    /* Темная тема */
+    body.dark-theme {
+        background: #0f172a;
+    }
+
     body.dark-theme .sidebar {
         background: #1e293b;
         border-right-color: #334155;
@@ -312,12 +344,12 @@
         color: #e2e8f0;
     }
 
-    body.dark-theme .chat-last-message {
+    body.dark-theme .chat-preview {
         color: #94a3b8;
     }
 
-    body.dark-theme .empty-icon {
-        opacity: 0.5;
+    body.dark-theme .chat-time {
+        color: #64748b;
     }
 
     body.dark-theme .empty-title {
@@ -328,46 +360,8 @@
         color: #64748b;
     }
 
-    /* Мобильная адаптация */
-    @media (max-width: 768px) {
-        .sidebar {
-            max-width: 100%;
-        }
-
-        /* Увеличить кнопки до 44px для тачскринов */
-        .header-btn {
-            width: 44px;
-            height: 44px;
-            font-size: 20px;
-        }
-
-        /* Увеличить зону клика для чатов */
-        .chat-item {
-            padding: 14px 20px;
-        }
-
-        /* Адаптация аватарок для маленьких экранов */
-        .chat-avatar {
-            width: 52px;
-            height: 52px;
-            font-size: 19px;
-        }
-    }
-
-    /* Убрать hover эффекты на тачскринах */
-    @media (hover: none) {
-        .header-btn:hover {
-            background: rgba(255,255,255,0.15);
-            transform: none;
-        }
-
-        .chat-item:hover {
-            background: white;
-        }
-
-        body.dark-theme .chat-item:hover {
-            background: #1e293b;
-        }
+    body.dark-theme .online-dot {
+        border-color: #1e293b;
     }
 
     /* Десктопная адаптация */
