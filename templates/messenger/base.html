@@ -283,7 +283,8 @@
 
         {% block extra_css %}{% endblock %}
     </style>
-    <link rel="stylesheet" href="{% static 'mobile-clean.css' %}">
+    <!-- ТОЛЬКО ОДИН CSS ФАЙЛ ДЛЯ МОБИЛЬНЫХ -->
+    <link rel="stylesheet" href="{% static 'mobile-minimal.css' %}?v=2">
 </head>
 <body>
     {% block content %}{% endblock %}
