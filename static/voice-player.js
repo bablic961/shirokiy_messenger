@@ -18,6 +18,7 @@ class VoicePlayer {
             background: rgba(0,0,0,0.05);
             border-radius: 20px;
             margin-top: 8px;
+            width: 100%;
             max-width: 100%;
             box-sizing: border-box;
         `;

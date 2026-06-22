@@ -7,16 +7,21 @@ class VideoNotePlayer {
     }
 
     createPlayer(videoUrl, messageId) {
+        // Адаптивный размер для мобильных
+        const isMobile = window.innerWidth <= 768;
+        const size = isMobile ? 180 : 200;
+
         const container = document.createElement('div');
         container.className = 'video-note-player';
         container.id = `video-note-player-${messageId}`;
         container.style.cssText = `
             position: relative;
-            width: 200px;
-            height: 200px;
+            width: ${size}px;
+            height: ${size}px;
             margin-top: 8px;
             border-radius: 50%;
             overflow: hidden;
+            flex-shrink: 0;
         `;
 
         const videoElement = document.createElement('video');
