@@ -12,9 +12,11 @@ class VideoNotePlayer {
         container.id = `video-note-player-${messageId}`;
         container.style.cssText = `
             position: relative;
-            width: 240px;
-            height: 240px;
+            width: 200px;
+            height: 200px;
             margin-top: 8px;
+            border-radius: 50%;
+            overflow: hidden;
         `;
 
         const videoElement = document.createElement('video');
@@ -22,11 +24,10 @@ class VideoNotePlayer {
         videoElement.style.cssText = `
             width: 100%;
             height: 100%;
-            border-radius: 50%;
             object-fit: cover;
             background: #000;
             cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            display: block;
         `;
 
         const playOverlay = document.createElement('div');

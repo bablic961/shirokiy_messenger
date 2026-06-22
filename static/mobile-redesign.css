@@ -466,12 +466,14 @@ body {
     .voice-player {
         max-width: 100%;
         width: 100%;
-        min-width: 200px;
         padding: 10px;
         background: rgba(0, 0, 0, 0.05);
         border-radius: 20px;
         margin-top: 6px;
         box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .message-group.own .voice-player {
@@ -490,6 +492,15 @@ body {
         border-radius: 50%;
         overflow: hidden;
         margin-top: 6px;
+        position: relative;
+    }
+
+    @media (max-width: 768px) {
+        .message-video-note,
+        .video-note-player {
+            width: 180px;
+            height: 180px;
+        }
     }
 
     /* Файлы */

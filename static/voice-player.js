@@ -18,7 +18,8 @@ class VoicePlayer {
             background: rgba(0,0,0,0.05);
             border-radius: 20px;
             margin-top: 8px;
-            min-width: 280px;
+            max-width: 100%;
+            box-sizing: border-box;
         `;
 
         const audio = new Audio(voiceUrl);
